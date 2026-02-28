@@ -40,7 +40,7 @@ struct BannersDemoView: View {
                 message: "This is an overlay banner with an optional action.",
                 style: .info,
                 actionTitle: "OK"
-            ) { bannerStore.dismiss() })
+            ) { [weak bannerStore] in bannerStore?.dismiss() })
         }
     }
 
@@ -51,7 +51,7 @@ struct BannersDemoView: View {
                 message: "Your changes have been saved.",
                 style: .success,
                 actionTitle: "Dismiss"
-            ) { bannerStore.dismiss() })
+            ) { [weak bannerStore] in bannerStore?.dismiss() })
         }
     }
 
@@ -62,7 +62,7 @@ struct BannersDemoView: View {
                 message: "Something went wrong. Please try again.",
                 style: .error,
                 actionTitle: "Retry"
-            ) { bannerStore.dismiss() })
+            ) { [weak bannerStore] in bannerStore?.dismiss() })
         }
     }
 

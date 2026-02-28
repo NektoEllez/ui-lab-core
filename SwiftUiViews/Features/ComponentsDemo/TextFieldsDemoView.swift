@@ -31,6 +31,7 @@ struct TextFieldsDemoView: View {
     @State private var formState = LoginFormState()
     @FocusState private var focusedField: Field?
     @State private var scrollToFieldId: Field?
+    @State private var scrollTask: Task<Void, Never>?
 
     enum Field: Hashable {
         case email
@@ -60,6 +61,10 @@ struct TextFieldsDemoView: View {
             .platformInlineTitleMode()
             .toolbar { toolbarContent }
             .onTapGesture { focusedField = nil }
+            .onDisappear {
+                scrollTask?.cancel()
+                scrollTask = nil
+            }
     }
 
     private var formContent: some View {
@@ -196,7 +201,8 @@ struct TextFieldsDemoView: View {
     }
 
     private func scrollToField(_ field: Field, proxy: ScrollViewProxy) {
-        Task { @MainActor in
+        scrollTask?.cancel()
+        scrollTask = Task { @MainActor in
             do {
                 try await Task.sleep(for: .seconds(0.1)) // focus settles
             } catch {
@@ -205,6 +211,7 @@ struct TextFieldsDemoView: View {
             withAnimation(.snappy(duration: 0.25)) {
                 proxy.scrollTo(field, anchor: .center)
             }
+            scrollTask = nil
         }
     }
 }

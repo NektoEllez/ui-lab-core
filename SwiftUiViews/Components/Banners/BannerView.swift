@@ -64,7 +64,8 @@ struct BannerView: View {
         Button { onDismiss() } label: {
             Image(systemName: "xmark.circle.fill")
                 .font(.title3)
-                .foregroundStyle(.secondary)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(iconColor)
         }
         .accessibilityLabel("Dismiss banner")
     }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct MoreComponentsDemoView: View {
     @State private var showLoading = false
+    @State private var loadingTask: Task<Void, Never>?
     @State private var searchQuery = ""
     @FocusState private var searchFocused: Bool
     @State private var carouselIndex: Int? = 0
@@ -24,19 +25,27 @@ struct MoreComponentsDemoView: View {
         }
         .navigationTitle("Overlay, card & search")
         .platformInlineTitleMode()
-        .loadingOverlay(isPresented: showLoading)
+        .loadingOverlay(isPresented: showLoading, allowsHitTesting: false)
+        .onDisappear {
+            loadingTask?.cancel()
+            loadingTask = nil
+        }
     }
 
     private var loadingOverlaySection: some View {
         Section {
             Button(showLoading ? "Hide loading overlay" : "Show loading overlay") {
-                showLoading.toggle()
+                if showLoading {
+                    stopLoading()
+                } else {
+                    runLoadingDemo()
+                }
             }
             .buttonStyle(.bordered)
         } header: {
             Text("Loading overlay")
         } footer: {
-            Text(".loadingOverlay(isPresented:) — full-screen overlay with ProgressView.")
+            Text(".loadingOverlay(isPresented:) with demo auto-stop in 1.6s and manual hide.")
         }
     }
 
@@ -105,6 +114,27 @@ struct MoreComponentsDemoView: View {
                     .font(.title2.weight(.semibold))
                     .foregroundStyle(.white)
             )
+    }
+
+    private func runLoadingDemo() {
+        loadingTask?.cancel()
+        showLoading = true
+        loadingTask = Task { @MainActor in
+            try? await Task.sleep(for: .seconds(1.6))
+            guard !Task.isCancelled else { return }
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showLoading = false
+            }
+            loadingTask = nil
+        }
+    }
+
+    private func stopLoading() {
+        loadingTask?.cancel()
+        loadingTask = nil
+        withAnimation(.easeInOut(duration: 0.2)) {
+            showLoading = false
+        }
     }
 }
 

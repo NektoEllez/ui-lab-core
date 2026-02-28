@@ -39,6 +39,7 @@ struct BottomBarDemoView: View {
     @State private var formState = BottomBarFormState()
     @FocusState private var focusedField: Field?
     @State private var scrollToFieldId: Field?
+    @State private var scrollTask: Task<Void, Never>?
 
     enum Field: Hashable {
         case name
@@ -65,6 +66,10 @@ struct BottomBarDemoView: View {
             .platformInlineTitleMode()
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 bottomBar
+            }
+            .onDisappear {
+                scrollTask?.cancel()
+                scrollTask = nil
             }
     }
 
@@ -218,7 +223,8 @@ struct BottomBarDemoView: View {
     }
 
     private func scrollToField(_ field: Field, proxy: ScrollViewProxy) {
-        Task { @MainActor in
+        scrollTask?.cancel()
+        scrollTask = Task { @MainActor in
             do {
                 try await Task.sleep(for: .seconds(0.1))
             } catch {
@@ -227,6 +233,7 @@ struct BottomBarDemoView: View {
             withAnimation(.snappy(duration: 0.25)) {
                 proxy.scrollTo(field, anchor: .center)
             }
+            scrollTask = nil
         }
     }
 }

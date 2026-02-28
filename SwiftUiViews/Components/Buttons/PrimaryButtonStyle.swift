@@ -14,8 +14,8 @@ struct PrimaryButtonStyle: ButtonStyle {
         configuration.label
             .font(.body.weight(.semibold))
             .foregroundStyle(.background)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity, minHeight: 50)
+            .padding(.vertical, 12)
             .padding(.horizontal, 20)
             .contentShape(.rect)
             .modifier(PrimaryButtonBackground(isPressed: configuration.isPressed))
@@ -52,8 +52,8 @@ struct SecondaryButtonStyle: ButtonStyle {
         configuration.label
             .font(.body.weight(.medium))
             .foregroundStyle(.primary)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
+            .frame(maxWidth: .infinity, minHeight: 50)
+            .padding(.vertical, 12)
             .padding(.horizontal, 20)
             .contentShape(.rect)
             .modifier(SecondaryButtonBackground(isPressed: configuration.isPressed))
