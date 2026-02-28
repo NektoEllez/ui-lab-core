@@ -27,36 +27,7 @@ final class AppRouter {
     }
 
     @ViewBuilder
-    func destination(for route: Route) -> some View {
-        switch route {
-        case .buttons:
-            ButtonsDemoView()
-        case .textFields:
-            TextFieldsDemoView()
-        case .toast:
-            EmptyView() // Built in ContentView with ToastDemoView(toastStore:)
-        case .banners:
-            BannersDemoView()
-        case .lists:
-            ListsDemoView()
-        case .messageList:
-            MessageListDemoView()
-        case .bottomBar:
-            BottomBarDemoView()
-        case .chips:
-            ChipsDemoView()
-        case .templates:
-            TemplatesDemoView()
-        case .moreComponents:
-            MoreComponentsDemoView()
-        case .settings:
-            SettingsDemoView()
-        case .notifications:
-            NotificationsDemoView()
-        case .profile:
-            ProfileDemoView()
-        case .help:
-            HelpDemoView()
-        }
+    func destination(for route: Route, toastStore: ToastStore?) -> some View {
+        route.destination(toastStore: toastStore)
     }
 }

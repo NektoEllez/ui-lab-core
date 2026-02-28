@@ -14,10 +14,11 @@ struct ComponentCatalogSection: Identifiable {
 }
 
 struct ComponentCatalogItem: Identifiable {
-    let id: String
     let route: Route
-    let title: String
-    let icon: String
+
+    var id: String { route.rawValue }
+    var title: String { route.title }
+    var icon: String { route.icon }
 }
 
 enum ComponentCatalog {
@@ -26,34 +27,34 @@ enum ComponentCatalog {
             id: "core-components",
             title: "Core Components",
             items: [
-                ComponentCatalogItem(id: "buttons", route: .buttons, title: "Buttons", icon: "hand.tap"),
-                ComponentCatalogItem(id: "text-fields", route: .textFields, title: "Text fields", icon: "textformat"),
-                ComponentCatalogItem(id: "toast", route: .toast, title: "Toast", icon: "bell.badge"),
-                ComponentCatalogItem(id: "banners", route: .banners, title: "Banners", icon: "rectangle.portrait.topthird.inset.filled"),
-                ComponentCatalogItem(id: "chips", route: .chips, title: "Chips", icon: "circle.grid.2x2")
+                ComponentCatalogItem(route: .buttons),
+                ComponentCatalogItem(route: .textFields),
+                ComponentCatalogItem(route: .toast),
+                ComponentCatalogItem(route: .banners),
+                ComponentCatalogItem(route: .chips)
             ]
         ),
         ComponentCatalogSection(
             id: "navigation-lists",
             title: "Navigation & Lists",
             items: [
-                ComponentCatalogItem(id: "lists", route: .lists, title: "Lists (menu)", icon: "list.bullet"),
-                ComponentCatalogItem(id: "message-list", route: .messageList, title: "Message list", icon: "envelope"),
-                ComponentCatalogItem(id: "bottom-bar", route: .bottomBar, title: "Bottom bar / Footer", icon: "rectangle.bottomhalf.inset.filled")
+                ComponentCatalogItem(route: .lists),
+                ComponentCatalogItem(route: .messageList),
+                ComponentCatalogItem(route: .bottomBar)
             ]
         ),
         ComponentCatalogSection(
             id: "templates",
             title: "Template Kit",
             items: [
-                ComponentCatalogItem(id: "templates-demo", route: .templates, title: "Templates & Scaffolds", icon: "square.grid.3x3.topleft.filled")
+                ComponentCatalogItem(route: .templates)
             ]
         ),
         ComponentCatalogSection(
             id: "composed-screens",
             title: "Composed Screens",
             items: [
-                ComponentCatalogItem(id: "more-components", route: .moreComponents, title: "Overlay, card & search", icon: "square.stack.3d.up")
+                ComponentCatalogItem(route: .moreComponents)
             ]
         )
     ]

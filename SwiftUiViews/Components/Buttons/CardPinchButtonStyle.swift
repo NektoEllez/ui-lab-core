@@ -19,8 +19,8 @@ struct CardPinchButtonStyle: ButtonStyle {
         configuration.label
             .font(.body.weight(.medium))
             .foregroundStyle(.primary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.vertical, 16)
+            .frame(maxWidth: .infinity, minHeight: 52, alignment: .leading)
+            .padding(.vertical, 14)
             .padding(.horizontal, 20)
             .contentShape(.rect)
             .background(cardBackground(isPressed: configuration.isPressed))
