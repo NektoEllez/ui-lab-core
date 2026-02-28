@@ -10,11 +10,29 @@ import SwiftUI
 struct ButtonsDemoView: View {
     @State private var showExpandableFAB = false
     @State private var fabExpanded = false
+    @State private var animateSections = false
 
     var body: some View {
-        buttonsList
+        ScrollView {
+            VStack(spacing: 14) {
+                higSection
+                primarySecondarySection
+                systemStylesSection
+                glassSection
+                expandableFABSection
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+        }
+        .background(Color.platformGroupedBackground)
             .navigationTitle("Buttons")
             .platformInlineTitleMode()
+            .onAppear {
+                guard !animateSections else { return }
+                withAnimation(.spring(response: 0.45, dampingFraction: 0.84)) {
+                    animateSections = true
+                }
+            }
             .overlay {
                 if showExpandableFAB {
                     ExpandableFABView(
@@ -35,38 +53,23 @@ struct ButtonsDemoView: View {
         ]
     }
 
-    private var buttonsList: some View {
-        List {
-            higSection
-            primarySecondarySection
-            cardPinchSection
-            expandableFABSection
-            systemStylesSection
-            glassSection
-        }
-    }
-
     // MARK: - HIG (Human Interface Guidelines)
 
     private var higSection: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 10) {
-                Label("HIG‑aligned", systemImage: "checkmark.seal.fill")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                VStack(alignment: .leading, spacing: 6) {
-                    higRow(icon: "hand.tap", text: "Purposeful animation (<400ms)")
-                    higRow(icon: "waveform", text: "Haptic feedback (light / selection)")
-                    higRow(icon: "figure.walk", text: "Reduce Motion: scale off when enabled")
-                    higRow(icon: "paintbrush", text: "Contrast: dark button → light text, light → dark text")
-                }
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        DemoCard(
+            title: "UX Principles",
+            subtitle: "Hierarchy, contrast, motion and feedback",
+            isVisible: animateSections,
+            delay: 0.0
+        ) {
+            VStack(alignment: .leading, spacing: 8) {
+                higRow(icon: "hand.tap", text: "Tap targets stay comfortable and obvious")
+                higRow(icon: "waveform", text: "Haptics only on meaningful actions")
+                higRow(icon: "figure.walk", text: "Reduce Motion respected")
+                higRow(icon: "paintbrush", text: "Clear visual hierarchy: primary > secondary > tertiary")
             }
-            .padding(.vertical, 8)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        } header: {
-            Text("Human Interface Guidelines")
+            .font(.caption)
+            .foregroundStyle(.secondary)
         }
     }
 
@@ -78,113 +81,115 @@ struct ButtonsDemoView: View {
         }
     }
 
-    // MARK: - Primary & Secondary (glass vs blur)
+    // MARK: - Primary, Secondary and Card
 
     private var primarySecondarySection: some View {
-        Section {
+        DemoCard(
+            title: "Action Hierarchy",
+            subtitle: "Use one prominent action per context",
+            isVisible: animateSections,
+            delay: 0.05
+        ) {
             VStack(alignment: .leading, spacing: 6) {
-                Button("Primary — glass + bounce") {}
+                Button("Continue") {}
                     .buttonStyle(.primary)
-                Text("Black/white fill · Spring 0.28 · scale 0.96 · light haptic")
+                Text("Primary action")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
-            .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 4, trailing: 16))
-            .listRowBackground(Color.clear)
 
             VStack(alignment: .leading, spacing: 6) {
-                Button("Secondary — blur + snappy") {}
+                Button("Save for later") {}
                     .buttonStyle(.secondaryBordered)
-                Text("UltraThinMaterial · Snappy 0.18 · scale 0.97 · selection haptic")
+                Text("Secondary action")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
-            .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 10, trailing: 16))
-            .listRowBackground(Color.clear)
-        } header: {
-            Text("Primary & secondary")
-        }
-    }
 
-    // MARK: - Card Pinch (material)
-
-    private var cardPinchSection: some View {
-        Section {
             VStack(alignment: .leading, spacing: 6) {
-                Button("Card — material + soft spring") {}
+                Button("Open details") {}
                     .buttonStyle(.cardPinch)
-                Text("RegularMaterial · Spring 0.35 · scale 0.98 · light haptic")
+                Text("Card-like contextual action")
                     .font(.caption2)
                     .foregroundStyle(.tertiary)
             }
-            .listRowInsets(EdgeInsets(top: 10, leading: 16, bottom: 10, trailing: 16))
-            .listRowBackground(Color.clear)
-        } header: {
-            Text("Card Pinch")
         }
     }
 
-    // MARK: - Expandable FAB (круглая кнопка, по нажатию — три «крудочки»)
+    // MARK: - Expandable FAB
 
     private var expandableFABSection: some View {
-        Section {
-            Toggle("Show expandable FAB", isOn: $showExpandableFAB)
-        } header: {
-            Text("Expandable FAB")
-        } footer: {
-            Text("Round button at bottom. Tap to show three crumb buttons to the left. Tap outside to collapse. iOS 26 glass when available.")
+        DemoCard(
+            title: "Expandable FAB",
+            subtitle: "Use when quick actions should stay near the main context",
+            isVisible: animateSections,
+            delay: 0.20
+        ) {
+            Toggle("Show floating actions", isOn: $showExpandableFAB)
+                .tint(.accentColor)
         }
     }
 
     // MARK: - System styles
 
     private var systemStylesSection: some View {
-        Section {
-            Button("Bordered", systemImage: "square.and.arrow.up") {}
-                .buttonStyle(.bordered)
-            Button("Bordered prominent", systemImage: "checkmark.circle") {}
-                .buttonStyle(.borderedProminent)
-            Button("Borderless", systemImage: "link") {}
-                .buttonStyle(.borderless)
-            Button("Plain", systemImage: "gearshape") {}
-                .buttonStyle(.plain)
-            HStack(spacing: 12) {
-                Button { } label: { Image(systemName: "plus.circle") }
-                    .buttonStyle(.bordered)
-                Button { } label: { Image(systemName: "heart") }
-                    .buttonStyle(.borderedProminent)
-                Button { } label: { Image(systemName: "square.and.arrow.up") }
-                    .buttonStyle(.plain)
+        DemoCard(
+            title: "System Styles",
+            subtitle: "Prefer built-in styles for consistency",
+            isVisible: animateSections,
+            delay: 0.10
+        ) {
+            VStack(spacing: 10) {
+                HStack(spacing: 10) {
+                    Button("Bordered", systemImage: "square.and.arrow.up") {}
+                        .buttonStyle(.bordered)
+                    Button("Prominent", systemImage: "checkmark.circle.fill") {}
+                        .buttonStyle(.borderedProminent)
+                }
+
+                HStack(spacing: 10) {
+                    Button("Borderless", systemImage: "link") {}
+                        .buttonStyle(.borderless)
+                    Button("Plain", systemImage: "gearshape") {}
+                        .buttonStyle(.plain)
+                }
+
+                HStack(spacing: 12) {
+                    Button { } label: { Image(systemName: "plus.circle.fill") }
+                        .buttonStyle(.bordered)
+                    Button { } label: { Image(systemName: "heart.fill") }
+                        .buttonStyle(.borderedProminent)
+                    Button { } label: { Image(systemName: "square.and.arrow.up") }
+                        .buttonStyle(.plain)
+                }
+                .font(.title3)
+                .frame(maxWidth: .infinity, alignment: .center)
             }
-            .frame(maxWidth: .infinity)
-        } header: {
-            Text("System styles")
-        } footer: {
-            Text("Bordered, borderedProminent, borderless, plain. Bottom row: icon-only.")
         }
     }
 
     // MARK: - Glass (iOS 26)
 
     private var glassSection: some View {
-        Section {
+        DemoCard(
+            title: "Glass (iOS 26)",
+            subtitle: "Use sparingly for controls and navigation emphasis",
+            isVisible: animateSections,
+            delay: 0.15
+        ) {
             GlassEffectContainer(spacing: 16) {
                 glassButtons
             }
-        } header: {
-            Text("Glass (iOS 26)")
-        } footer: {
-            Text("Liquid Glass: .glass, .glassProminent. Wrap in GlassEffectContainer for shared context.")
         }
     }
 
     private var glassButtons: some View {
         VStack(spacing: 12) {
-            Button("Glass", systemImage: "sparkles") {}
+            Button("Glass Action", systemImage: "sparkles") {}
                 .buttonStyle(.glass)
-            Button("Glass prominent", systemImage: "checkmark") {}
+            Button("Glass Prominent", systemImage: "checkmark") {}
                 .buttonStyle(.glassProminent)
-            Button("Glass with label", systemImage: "star.fill") {}
+            Button("Glass Secondary", systemImage: "star.fill") {}
                 .buttonStyle(.glass)
             HStack(spacing: 12) {
                 Button { } label: { Image(systemName: "plus") }
@@ -196,6 +201,55 @@ struct ButtonsDemoView: View {
             }
             .frame(maxWidth: .infinity)
         }
+    }
+}
+
+private struct DemoCard<Content: View>: View {
+    let title: String
+    let subtitle: String
+    let isVisible: Bool
+    let delay: Double
+    @ViewBuilder let content: Content
+
+    init(
+        title: String,
+        subtitle: String,
+        isVisible: Bool,
+        delay: Double,
+        @ViewBuilder content: () -> Content
+    ) {
+        self.title = title
+        self.subtitle = subtitle
+        self.isVisible = isVisible
+        self.delay = delay
+        self.content = content()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            content
+        }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(.ultraThinMaterial)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .strokeBorder(.white.opacity(0.12), lineWidth: 1)
+        )
+        .opacity(isVisible ? 1 : 0)
+        .offset(y: isVisible ? 0 : 16)
+        .animation(.spring(response: 0.45, dampingFraction: 0.86).delay(delay), value: isVisible)
     }
 }
 

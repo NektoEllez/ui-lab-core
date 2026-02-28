@@ -31,14 +31,22 @@ final class ToastStore {
 
     func show(_ message: ToastMessage, autoDismissAfter seconds: Double = 3) {
         dismissTask?.cancel()
-        self.message = message
-        dismissTask = Task {
+        withAnimation(.snappy(duration: 0.25)) {
+            self.message = message
+        }
+
+        let safeDelay = max(0, seconds)
+        dismissTask = Task { @MainActor [weak self] in
             do {
-                try await Task.sleep(for: .seconds(seconds))
+                try await Task.sleep(for: .seconds(safeDelay))
                 if !Task.isCancelled {
-                    dismiss()
+                    self?.dismiss()
                 }
-            } catch {}
+            } catch is CancellationError {
+                // Expected path when toast is replaced or manually dismissed.
+            } catch {
+                // No-op: keep UI stable even if timing task fails unexpectedly.
+            }
         }
     }
 

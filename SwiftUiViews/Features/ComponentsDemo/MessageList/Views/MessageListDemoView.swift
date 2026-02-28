@@ -9,17 +9,16 @@ import SwiftUI
 
 struct MessageListDemoView: View {
     @State private var viewModel: MessageListDemoViewModel
-    @Bindable private var bindableViewModel: MessageListDemoViewModel
     @State private var lastMarkedReadId: String?
     @State private var bannerMessage: MessageListItem?
 
     init() {
         let vm = MessageListDemoViewModel()
         _viewModel = State(initialValue: vm)
-        _bindableViewModel = Bindable(vm)
     }
 
     var body: some View {
+        @Bindable var bindableViewModel = viewModel
         contentView
             .overlay { messageBannerOverlay }
             .navigationTitle("Messages")
@@ -202,7 +201,11 @@ struct MessageListDemoView: View {
                 do {
                     try await Task.sleep(for: .seconds(2.5))
                     await MainActor.run { dismissBannerAndMarkRead(message)() }
-                } catch {}
+                } catch is CancellationError {
+                    // Expected when banner changes/disappears before timeout.
+                } catch {
+                    // Keep UI stable if task fails unexpectedly.
+                }
             }
         }
     }
